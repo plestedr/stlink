@@ -29,12 +29,13 @@ static void cleanup(int signum) {
 
 static void usage(void)
 {
-    puts("stlinkv1 command line: ./st-flash [--debug] [--reset] [--format <format>] {read|write} /dev/sgX <path> <addr> <size>");
+    puts("stlinkv1 command line: ./st-flash [--debug] [--reset] [--format <format>] [--flash=<fsize>] {read|write} /dev/sgX <path> <addr> <size>");
     puts("stlinkv1 command line: ./st-flash [--debug] /dev/sgX erase");
-    puts("stlinkv2 command line: ./st-flash [--debug] [--reset] [--serial <serial>] [--format <format>] {read|write} <path> <addr> <size>");
+    puts("stlinkv2 command line: ./st-flash [--debug] [--reset] [--serial <serial>] [--format <format>] [--flash=<fsize>] {read|write} <path> <addr> <size>");
     puts("stlinkv2 command line: ./st-flash [--debug] [--serial <serial>] erase");
     puts("stlinkv2 command line: ./st-flash [--debug] [--serial <serial>] reset");
     puts("                       Use hex format for addr, <serial> and <size>.");
+    puts("                       fsize: Use decimal, octal or hex by prefix 0xXXX for hex, optionally followed by k=KB, or m=MB (eg. --flash=128k)");
     puts("                       Format may be 'binary' (default) or 'ihex', although <addr> must be specified for binary format only.");
     puts("                       ./st-flash [--version]");
 }
@@ -63,6 +64,11 @@ int main(int ac, char** av)
 
     if (sl == NULL)
         return -1;
+
+    if ( o.flash_size != 0u && o.flash_size != sl->flash_size ) {
+        sl->flash_size = o.flash_size;
+        printf("Forcing flash size: --flash=0x%08X\n",(unsigned int)sl->flash_size);
+    }
 
     sl->verbose = o.log_level;
 
@@ -135,7 +141,7 @@ int main(int ac, char** av)
         if ((o.addr >= sl->flash_base) &&
                 (o.addr < sl->flash_base + sl->flash_size)) {
             if(o.format == FLASH_FORMAT_IHEX)
-                err = stlink_mwrite_flash(sl, mem, size, o.addr);
+                err = stlink_mwrite_flash(sl, mem, (uint32_t)size, o.addr);
             else
                 err = stlink_fwrite_flash(sl, o.filename, o.addr);
             if (err == -1)
@@ -147,7 +153,7 @@ int main(int ac, char** av)
         else if ((o.addr >= sl->sram_base) &&
                 (o.addr < sl->sram_base + sl->sram_size)) {
             if(o.format == FLASH_FORMAT_IHEX)
-                err = stlink_mwrite_sram(sl, mem, size, o.addr);
+                err = stlink_mwrite_sram(sl, mem, (uint32_t)size, o.addr);
             else
                 err = stlink_fwrite_sram(sl, o.filename, o.addr);
             if (err == -1)

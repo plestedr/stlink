@@ -2,9 +2,9 @@
 
 ## Build from sources
 
-* CMake
+* CMake (minimal v2.8.7)
 * C compiler (gcc, clang, mingw)
-* Libusb 1.0
+* Libusb 1.0 (minimal v1.0.9)
 * (optional) pandoc for generating manpages from markdown
 
 Run from the root of the source directory:
@@ -27,13 +27,13 @@ $ make
 You could install to a user folder e.g `$HOME`:
 
 ```
-$ cd release; make install DESTDIR=$HOME
+$ cd build/Release; make install DESTDIR=$HOME
 ```
 
 Or system wide:
 
 ```
-$ cd release; sudo make install
+$ cd build/Release; sudo make install
 ```
 
 ## Linux
@@ -82,7 +82,8 @@ Options (do one of these before you plug it in)
 *    2. `modprobe -r usb-storage && modprobe usb-storage`
 
 ### Build Debian Package
-To build debian package you need debuild.
+
+To build the debian package you need the following extra packages: `debuild debhelper`.
 
 ```
 $ git archive --prefix=$(git describe)/ HEAD | bzip2 --stdout > ../libstlink_$(sed -En -e "s/.*\((.*)\).*/\1/" -e "1,1 p" debian/changelog).orig.tar.bz2
@@ -116,3 +117,65 @@ during installation you can use the following cmake options:
 $ cmake -DSTLINK_UDEV_RULES_DIR="/usr/lib/udev/rules.d" \
         -DSTLINK_MODPROBED_DIR="/usr/lib/modprobe.d" ..
 ```
+
+## Build using different directory for shared libs
+
+To put the compiled shared libs into a different directory during installation
+you can use the following cmake option:
+
+```
+$ cmake -DLIB_INSTALL_DIR:PATH="/usr/lib64"  ..
+```
+
+## Windows (MinGW64) 
+
+### Prequistes
+
+* 7Zip
+* CMake 2.8 or higher
+* MinGW64 GCC toolchain (5.3.0)
+
+### Installation
+
+1. Install 7Zip from <http://www.7-zip.org>
+2. Install CMake from <https://cmake.org/download>
+3. Install MinGW64 from <https://sourceforge.net/projects/mingw-w64> (mingw-w64-install.exe)
+4. Git clone or download stlink sourcefiles zip
+
+### Building
+
+Check and execute (in the script folder) `<source-dir>\scripts\mingw64-build.bat`
+
+NOTE: when installing different toolchains make sure you edit the path in the `mingw64-build.bat`
+      the build script uses currently `C:\Program Files\mingw-w64\x86_64-5.3.0-win32-sjlj-rt_v4-rev0\mingw64\bin`
+
+## Windows (Visual Studio) 
+
+### Prerequisites
+
+* 7Zip
+* CMake (tested with version 3.9.0-rc2)
+* Visual Studio 2017 Community (other versions will likely work but are untested; the Community edition is free for open source
+development)
+
+### Installation
+
+1. Install 7Zip from <http://www.7-zip.org>
+2. Install CMake from <https://cmake.org/download>
+3. Git clone or download stlink sourcefiles zip
+
+### Building
+
+These instructions are for a 32bit version.
+
+In a command prompt, change directory to the folder where the stlink files were cloned (or unzipped).
+Make sure the build folder exists (`mkdir build` if not).
+From the build folder, run cmake (`cd build; cmake ..`).
+
+This will create a solution (stlink.sln) in the build folder. Open it in Visual Studio, select the Solution Configuration (Debug or
+Release) and build the solution normally (F7).
+
+NOTES: This solution will link to the dll version of libusb-1.0.  To debug or run the executable, the dll version of libusb-1.0 must
+be either on the path, or in the same folder as the executable.  It can be copied from here:
+`build\3thparty\libusb-1.0.21\MS32\dll\libusb-1.0.dll`.
+

@@ -1,31 +1,102 @@
 Stlink ChangeLog
 ================
 
-v1.3.0
+v1.5.0
 ======
 
-Release date: ongoing
+Release date: 2018-02-16
 
-Major changes:
+Major changes and added features:
 
-* Deprecation of autotools (autoconf, automake) (Jerry Jacobs)
-* Removal of undocumented `st-term` utility, which is now replaced by `st-util` ARM semihosting feature (Jerry Jacobs)
-* Add debian packaging (nekromant)
-* Add intel hex file reading for `st-flash` (pull-request #459) (dev26th)
+* STM32F72xx73xx support ([#1969148](https://github.com/texane/stlink/commit/19691485359afef1a256964afcbb8dcf4b733209))
+* Add support of STM32L496xx/4A6xx devices ([#615](https://github.com/texane/stlink/pull/615))
 
-Chip support added for:
+Fixes:
 
-* STM32F410 (Jerry Jacobs)
-* L0x Category 5 devices (gluedig)
-* Add L0 Category 2 device (chip id: 0x425) (Áron RADICS)
+* Fix memory map for stm32l496xx boards ([#639](https://github.com/texane/stlink/pull/639))
+* Fix write for microcontroler with RAM size less or equal to 32K ([#637](https://github.com/texane/stlink/pull/637))
+* Added LIB_INSTALL_DIR to correct libs install on 64-bit systems ([#636](https://github.com/texane/stlink/pull/636))
+* Fix verification of flash error for STM32L496x device ([#618](https://github.com/texane/stlink/pull/618))
+* Fix build on Fedora with GCC 8 ([#666](https://github.com/texane/stlink/pull/668))
+
+v1.4.0
+======
+
+Release date: 2017-07-01
+
+Major changes and added features:
+
+* Add support for STM32L452 target ([#608](https://github.com/texane/stlink/pull/608))
+* Initial support to compile with Microsoft Visual Studio 2017 ([#602](https://github.com/texane/stlink/pull/602))
+* Added support for flashing second bank on STM32F10x_XL ([#592](https://github.com/texane/stlink/pull/592))
+* Add support for STM32L011 target ([#572](https://github.com/texane/stlink/pull/572)) 
+* Allow building of debian package with CPack (@xor-gate)
 
 Updates and fixes:
 
-* Fix memory map for STM32F4 (zulusw)
+* Fix compilation with GCC 7 ([#590](https://github.com/texane/stlink/pull/590))
+* Skip GTK detection if we're cross-compiling ([#588](https://github.com/texane/stlink/pull/588))
+* Fix possible memory leak ([#570](https://github.com/texane/stlink/pull/570))
+* Fix building with mingw64 ([#569](https://github.com/texane/stlink/pull/569), [#610](https://github.com/texane/stlink/pull/610))
+* Update libusb to 1.0.21 for Windows ([#562](https://github.com/texane/stlink/pull/562))
+* Fixing low-voltage flashing on STM32F7 parts. ([#567](https://github.com/texane/stlink/pull/567))
+* Update libusb to 1.0.21 for Windows ([#562](https://github.com/texane/stlink/pull/562))
+
+v1.3.1
+======
+
+Release date: 2017-02-25
+
+Major changes and added features:
+
+* Add preliminary support for STM32L011 to see it after probe (chipid `0x457`) (@xor-gate)
+* Strip full paths to source files in log (commit [#2c0ab7f](https://github.com/texane/stlink/commit/2c0ab7f0eb6cfda5cfbdc08bb9f6760d27c2b667))
+* Add support for STM32F413 target ([#549](https://github.com/texane/stlink/pull/549))
+* Add support for Semihosting `SYS_READC` ([#546](https://github.com/texane/stlink/pull/546))
+
+Updates and fixes:
+
+* Update documentation markdown files
+* Compilation fixes ([#552](https://github.com/texane/stlink/pull/552))
+* Fix compilation when path includes spaces ([#561](https://github.com/texane/stlink/pull/561))
+
+v1.3.0
+======
+
+Release date: 2017-01-28
+
+Major changes and added features:
+
+* Deprecation of autotools (autoconf, automake) (@xor-gate)
+* Removal of undocumented `st-term` utility, which is now replaced by `st-util` ARM semihosting feature ([#3fd0f09](https://github.com/texane/stlink/commit/3fd0f099782506532198473b24f643a3f68d5ff9))
+* Add support for native debian packaging ([#444](https://github.com/texane/stlink/pull/444), [#485](https://github.com/texane/stlink/pull/485))
+* Add intel hex file reading for `st-flash` ([#459](https://github.com/texane/stlink/pull/541))
+* Add `--reset` command to `st-flash` ([#505](https://github.com/texane/stlink/pull/505))
+* Support serial numbers argument for `st-util` and `st-flash` for multi-programmer setups ([#541](https://github.com/texane/stlink/pull/541))
+* Add kill ('k') command to gdb-server for `st-util` ([#9804416](https://github.com/texane/stlink/commit/98044163ab34bf5159f121d1c49ffb3550321ca0))
+* Add manpages (generated with pandoc from Markdown) ([#464](https://github.com/texane/stlink/pull/464))
+* Rewrite commandline parsing for `st-flash` ([#459](https://github.com/texane/stlink/pull/459))
+* Add support for ARM semihosting to `st-util` ([#454](https://github.com/texane/stlink/pull/454), [#455](https://github.com/texane/stlink/pull/455))
+
+Chip support added for:
+
+* STM32L432 ([#501](https://github.com/texane/stlink/pull/501))
+* STM32F412 ([#538](https://github.com/texane/stlink/pull/538))
+* STM32F410 ([#9c635e4](https://github.com/texane/stlink/commit/9c635e419deca697ff823000aad2e39d47ec8d6c))
+* Add memory map for STM32F401XE ([#460](https://github.com/texane/stlink/pull/460))
+* L0x Category 5 devices ([#406](https://github.com/texane/stlink/pull/406))
+* Add L0 Category 2 device (chip id: 0x425) ([#72b8e5e](https://github.com/texane/stlink/commit/72b8e5ec87e4fa386a8e94fe68df29467d4354ce))
+
+Updates and fixes:
+
+* Fixed STM32F030 erase error ([#442](https://github.com/texane/stlink/pull/442))
+* Fixed Cygwin build ([#68b0f3b](https://github.com/texane/stlink/commit/68b0f3bddc3c4aaffe34caa6a3201029edd8ad56))
+* Reset flash mass erase (MER) bit after mass erase for safety ([#489](https://github.com/texane/stlink/pull/489))
+* Fix memory map for STM32F4 (@zulusw)
 * Fix STM32L-problem with flash loader (issue #390) (Tom de Boer)
 * `st-util` don't read target voltage on startup as it crashes STM32F100 (probably stlink/v1) (Greg Alexander)
-* Do a JTAG reset prior to reading CPU information when processor is in deep sleep (andyg24)
-* Redesign of `st-flash` commandline options parsing (pull-request #459) (dev26th)
+* Do a JTAG reset prior to reading CPU information when processor is in deep sleep (@andyg24)
+* Redesign of `st-flash` commandline options parsing (pull-request #459) (@dev26th)
 
 v1.2.0
 ======

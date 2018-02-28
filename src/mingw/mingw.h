@@ -1,25 +1,30 @@
-#ifdef __MINGW32__
-
-#include <io.h>
+#if defined(__MINGW32__) || defined(_MSC_VER)
 
 #define _USE_W32_SOCKETS 1
-#include <windows.h>
 
-#define ENOTCONN        WSAENOTCONN
-#define EWOULDBLOCK     WSAEWOULDBLOCK
-#define ENOBUFS         WSAENOBUFS
-#define ECONNRESET      WSAECONNRESET
-#define ESHUTDOWN       WSAESHUTDOWN
-#define EAFNOSUPPORT    WSAEAFNOSUPPORT
-#define EPROTONOSUPPORT WSAEPROTONOSUPPORT
-#define EINPROGRESS     WSAEINPROGRESS
-#define EISCONN         WSAEISCONN
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable: 4255 4668 4820)
+#endif
+
+#include <io.h>
+#include <WinSock2.h>
+#if defined(_MSC_VER)
+#pragma comment(lib, "ws2_32.lib")
+#endif
+#include <unistd.h>
+
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 
 /* winsock doesn't feature poll(), so there is a version implemented
  * in terms of select() in mingw.c. The following definitions
  * are copied from linux man pages. A poll() macro is defined to
  * call the version in mingw.c.
  */
+#if !defined(_WIN32_WINNT) || (_WIN32_WINNT < 0x0600)
+
 #define POLLIN      0x0001    /* There is data to read */
 #define POLLPRI     0x0002    /* There is urgent data to read */
 #define POLLOUT     0x0004    /* Writing now will not block */
@@ -31,6 +36,7 @@ struct pollfd {
     short events;     /* requested events */
     short revents;    /* returned events */
 };
+#endif
 #define poll(x, y, z)        win32_poll(x, y, z)
 
 /* These wrappers do nothing special except set the global errno variable if
@@ -65,6 +71,9 @@ char *win32_strsep(char **stringp, const char *delim);
 ssize_t win32_read_socket(SOCKET fd, void *buf, int n);
 ssize_t win32_write_socket(SOCKET fd, void *buf, int n);
 
+#ifndef STLINK_HAVE_UNISTD_H
 static inline void sleep(unsigned ms) { Sleep(ms); }
-
+void usleep(DWORD waitTime);
 #endif
+
+#endif //defined(__MINGW32__) || defined(_MSC_VER)

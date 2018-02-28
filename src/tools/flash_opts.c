@@ -47,12 +47,13 @@ int flash_get_opts(struct flash_opts* o, int ac, char** av)
 
             /** @todo This is not really portable, as strlen really returns size_t we need to obey and not cast it to a signed type. */
             int j = (int)strlen(serial);
+            int length = j / 2;  //the length of the destination-array
             if(j % 2 != 0) return -1;
  
             for(size_t k = 0; j >= 0 && k < sizeof(o->serial); ++k, j -= 2) {
                 char buffer[3] = {0};
                 memcpy(buffer, serial + j, 2);
-                o->serial[12 - k] = (uint8_t)strtol(buffer, NULL, 16);
+                o->serial[length - k] = (uint8_t)strtol(buffer, NULL, 16);
             }
 
             serial_specified = true;
@@ -76,7 +77,30 @@ int flash_get_opts(struct flash_opts* o, int ac, char** av)
             else
                 return -1;
         }
-        else {
+	else if ( starts_with(av[0], "--flash=") ) {
+		const char *arg = av[0] + strlen("--flash=");
+		char *ep = 0;
+
+		o->flash_size = (uint32_t)strtoul(arg,&ep,0);
+		while ( *ep ) {
+			switch ( *ep++ ) {
+			case 0:
+				break;
+			case 'k':
+			case 'K':
+				o->flash_size *= 1024u;
+				break;
+			case 'm':
+			case 'M':
+				o->flash_size *= 1024u * 1024u;
+				break;
+			default:
+				fprintf(stderr,"Invalid --flash=%s\n",arg);
+				return -1;
+			}
+		}
+	}
+	else {
             break;  // non-option found
         }
 
